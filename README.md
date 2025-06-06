@@ -10,6 +10,8 @@ A Node.js/Express backend service that processes YouTube videos to generate educ
 - **Flashcards Generation**: Generate true/false questions with explanations
 - **Multiple LLM Providers**: Support for multiple LLM providers (Gemini, Groq)
 - **Admin Controls**: API endpoints to manage LLM providers
+- **Supabase Authentication**: JWT-based authentication system
+- **Token-Based Usage**: Free and premium user tiers with token allocation
 
 ## Installation
 
@@ -35,6 +37,11 @@ Edit the `.env` file and provide the following:
 - `RAPIDAPI_KEY`: Your RapidAPI key for YouTube Transcript API
 - `LLM_PROVIDER`: The LLM provider to use (default: gemini)
 - `PORT`: Port for the server (default: 3000)
+- `SUPABASE_URL`: Your Supabase project URL
+- `SUPABASE_SERVICE_KEY`: Your Supabase service role key
+- `TOKENS_PER_VIDEO`: Tokens consumed per video (default: 10)
+- `FREE_USER_TOKENS`: Monthly tokens for free users (default: 50)
+- `PREMIUM_USER_TOKENS`: Monthly tokens for premium users (default: 300)
 
 ## API Keys Setup
 
@@ -61,6 +68,13 @@ Edit the `.env` file and provide the following:
 4. Get your API key from the RapidAPI dashboard
 5. Add your API key to the `.env` file as `RAPIDAPI_KEY`
 
+### Supabase Setup
+
+1. Create a project on [Supabase](https://supabase.com/)
+2. Get your project URL and service role key from the API settings
+3. Add these to your `.env` file as `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`
+4. Run the SQL scripts in `supabase-schema.sql` in your Supabase SQL editor
+
 ## Usage
 
 ### Start the server
@@ -73,7 +87,26 @@ npm run dev
 npm start
 ```
 
+### Testing Supabase Connection
+
+```bash
+# Test Supabase connection
+node scripts/test-supabase.js
+
+# Test authentication middleware
+node scripts/test-auth-middleware.js
+
+# Test token service
+node scripts/test-token-service.js
+```
+
 ### API Endpoints
+
+All endpoints now require authentication via Supabase JWT token in the Authorization header:
+
+```
+Authorization: Bearer your-supabase-jwt-token
+```
 
 #### 1. Get Transcript
 
@@ -161,6 +194,18 @@ Body:
   "provider": "gemini" or "groq"
 }
 ```
+
+## Subscription Model
+
+The application uses a token-based subscription model:
+
+- **Free tier**: 50 tokens per month
+- **Premium tier**: 300 tokens per month ($4.99)
+- **Token usage**: Each 30-minute video conversion consumes 10 tokens
+
+For detailed documentation on:
+- Authentication and token management, see [AUTHENTICATION.md](AUTHENTICATION.md)
+- Database schema and recent changes, see [DATABASE-SCHEMA.md](DATABASE-SCHEMA.md)
 
 ## Testing
 
